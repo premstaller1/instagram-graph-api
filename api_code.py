@@ -10,7 +10,7 @@ import datetime
 import time
 
 params = dict()
-params['access_token'] = 'EAAG24jaJaYIBAIyw6jxPH2b3fQDmzRoG2qCOf298WUYl5uMS3SW3SNV0FdvXorVofID8UZAJfCHan5adnPwZCbGdZCSSKVS0HhA3FPPI0mvyRMDZAXvUIZArR3VSZCpBtTjsdR88qYmMbD5ZAk1flNj473VMl53Aieg2IZC0XUAgLsZBkqoiMVUZCi'        # not an actual access token
+params['access_token'] = 'EAAG24jaJaYIBAJomAtGQ5o6rZAiEN78SqHp74P191U16LdfbMNLcl37jPNZAEo1cpqH0bFS8T1Es6CH7Qk1QpL64x108NpCzZAll3dekkZA5ukHaiPykNnRXzEZBjiC3L3cGu4E4BZBKZACRhrCv2n70XYzCnalbetLMGnlUUgosmgsBzajuR3NJmt0ReJQKckhayZA5ArnlcgZDZD'        # not an actual access token
 params['client_id'] = '482557670549890'                  
 params['client_secret'] = 'd62937e7f31973871d86b8242430b73e'     
 params['graph_domain'] = 'https://graph.facebook.com'
@@ -38,5 +38,94 @@ def get_data(url, endpointParams):
 
 #call method to retrieve data from API
 df = get_data(url, endpointParams)
-print(df)
+
+
+#transform audience_insight into dataframe
+def transform_data_country(audience_insight):
+    #The variables that I search for
+    audience_country = []
+    #Variables for Country
+    country_short = []
+    country_number = []
+
+    for i in audience_insight["data"]:
+        if i['name'] == "audience_country":
+            for x in i['values']:
+                for z in x["value"]:
+                    country_short.append(z)
+                    country_number.append(x['value'][z])
+    audience_country = pd.DataFrame(list(zip(country_short, country_number)), columns =['Country_ID', 'Count'])
+    #audience_country
+    audience_country = audience_country.sort_values(by = ['Count'],ascending=False)
+    print(audience_country)
+    return audience_country
+
+def transform_data_city(audience_insight):
+    #The variables that I search for
+    #Variables for City
+    city_name = []
+    region_name = []
+    city_number = []
+    for i in audience_insight["data"]:
+        if i['name'] == "audience_city":
+            for x in i['values']:
+                for z in x["value"]:
+                    xy = z.split(", ")
+                    city_name.append(xy[0])
+                    region_name.append(xy[1])
+                    city_number.append(x['value'][z])
+
+    audience_city = pd.DataFrame(list(zip(city_name, region_name, city_number)), columns =['City', 'Region', 'Count'])
+    #audience_city
+    audience_city = audience_city.sort_values(by = ['Count'],ascending=False)
+    print(audience_city)
+    return audience_city
+
+def transform_data_gender(audience_insight):
+    #The variables that I search for
+    #Variables for Age and Gender
+    gender = []
+    age_bracket = []
+    age_number = []
+
+    for i in audience_insight["data"]:
+        if i['name'] == "audience_gender_age":
+            for x in i['values']:
+                for z in x["value"]:
+                    gender_age_split = z.split(".")
+                    gender.append(gender_age_split[0])
+                    age_bracket.append(gender_age_split[1])
+                    age_number.append(x['value'][z])
+    audience_genderage = audience_genderage.sort_values(by = ['Count'],ascending=False)
+    return audience_genderage
+
+def get_demographics_data(url, goal):
+    url = params['endpoint_base'] + params['instagram_account_id'] + '/insights'
+
+    # Define Endpoint Parameters
+    endpointParams = dict()
+    endpointParams['metric'] = 'audience_city,audience_country,audience_gender_age' 
+    endpointParams['period'] = 'lifetime' 
+    endpointParams['access_token'] = params['access_token'] 
+
+    # Requests Data
+    data = requests.get(url, endpointParams )
+    audience_insight = json.loads(data.content)
+    if goal == "country":
+        transform_data_country(audience_insight)
+    elif goal == "city":
+        transform_data_city(audience_insight)
+    elif goal == "gender":  
+        transform_data_gender(audience_insight)
+    return audience_insight      
+
+#call method to retrieve data from API
+df = get_demographics_data(url, "country")
+
+
+
+
+
+
+
 
