@@ -10,7 +10,7 @@ import datetime
 import time
 
 params = dict()
-params['access_token'] = 'EAAG24jaJaYIBAJomAtGQ5o6rZAiEN78SqHp74P191U16LdfbMNLcl37jPNZAEo1cpqH0bFS8T1Es6CH7Qk1QpL64x108NpCzZAll3dekkZA5ukHaiPykNnRXzEZBjiC3L3cGu4E4BZBKZACRhrCv2n70XYzCnalbetLMGnlUUgosmgsBzajuR3NJmt0ReJQKckhayZA5ArnlcgZDZD'        # not an actual access token
+params['access_token'] = 'EAAG24jaJaYIBAL1gNtJHG2MwIuP4lZBQD882UL7gUfoisbFrZAoMDTU6ylVijSeywUgRz3jmIEWq5GcIndCdDflYYJWZCGAtdnWcbXVgMaXIZAtIxokWR8uKvf0Rpwo3iWOXZCI98vAv1xTBesjT93ZCf4OuV3Un0ru8gmKFnjbhF82Ef2lcegRkpiZBCzJJJwYT3fFJ5rPWQZDZD'        # not an actual access token
 params['client_id'] = '482557670549890'                  
 params['client_secret'] = 'd62937e7f31973871d86b8242430b73e'     
 params['graph_domain'] = 'https://graph.facebook.com'
@@ -37,7 +37,7 @@ def get_data(url, endpointParams):
     return access_token_data
 
 #call method to retrieve data from API
-df = get_data(url, endpointParams)
+#df = get_data(url, endpointParams)
 
 
 #transform audience_insight into dataframe
@@ -57,8 +57,8 @@ def transform_data_country(audience_insight):
     audience_country = pd.DataFrame(list(zip(country_short, country_number)), columns =['Country_ID', 'Count'])
     #audience_country
     audience_country = audience_country.sort_values(by = ['Count'],ascending=False)
+    audience_country.to_csv('country_data.csv', index=False)
     print(audience_country)
-    return audience_country
 
 def transform_data_city(audience_insight):
     #The variables that I search for
@@ -78,8 +78,8 @@ def transform_data_city(audience_insight):
     audience_city = pd.DataFrame(list(zip(city_name, region_name, city_number)), columns =['City', 'Region', 'Count'])
     #audience_city
     audience_city = audience_city.sort_values(by = ['Count'],ascending=False)
+    audience_city.to_csv('city_data.csv', index=False)
     print(audience_city)
-    return audience_city
 
 def transform_data_gender(audience_insight):
     #The variables that I search for
@@ -96,8 +96,11 @@ def transform_data_gender(audience_insight):
                     gender.append(gender_age_split[0])
                     age_bracket.append(gender_age_split[1])
                     age_number.append(x['value'][z])
-    audience_genderage = audience_genderage.sort_values(by = ['Count'],ascending=False)
-    return audience_genderage
+    audience_genderage = pd.DataFrame(list(zip(gender, age_bracket, age_number)), columns =['Gender', 'Age Bracket', 'Count'])
+    audience_genderage.to_csv('gender_data.csv', index=False)
+    print(audience_genderage)
+
+target = ["country", "city", "gender"]
 
 def get_demographics_data(url, goal):
     url = params['endpoint_base'] + params['instagram_account_id'] + '/insights'
@@ -110,22 +113,16 @@ def get_demographics_data(url, goal):
 
     # Requests Data
     data = requests.get(url, endpointParams )
-    audience_insight = json.loads(data.content)
-    if goal == "country":
-        transform_data_country(audience_insight)
-    elif goal == "city":
-        transform_data_city(audience_insight)
-    elif goal == "gender":  
-        transform_data_gender(audience_insight)
-    return audience_insight      
-
+    for i in goal:  
+        print(i) 
+        audience_insight = json.loads(data.content)
+        if i == "country":
+            transform_data_country(audience_insight)
+        elif i == "city":
+            transform_data_city(audience_insight)
+        elif i == "gender":  
+            transform_data_gender(audience_insight)
+        else:
+            print("Error")
 #call method to retrieve data from API
-df = get_demographics_data(url, "country")
-
-
-
-
-
-
-
-
+get_demographics_data(url, target)
