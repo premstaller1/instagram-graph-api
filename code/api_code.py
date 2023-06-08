@@ -8,9 +8,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import datetime
 import time
+from folder import export_csv_to_folder
 
 params = dict()
-params['access_token'] = 'EAAG24jaJaYIBAL1gNtJHG2MwIuP4lZBQD882UL7gUfoisbFrZAoMDTU6ylVijSeywUgRz3jmIEWq5GcIndCdDflYYJWZCGAtdnWcbXVgMaXIZAtIxokWR8uKvf0Rpwo3iWOXZCI98vAv1xTBesjT93ZCf4OuV3Un0ru8gmKFnjbhF82Ef2lcegRkpiZBCzJJJwYT3fFJ5rPWQZDZD'        # not an actual access token
+params['access_token'] = 'EAAG24jaJaYIBAPH6wTkZB5eEdwHTk0ZBHCQjaz308sZAIZCADYjlqVrk0gPZALKo1TU42e76rIEpQONiM31G5dBSnUDvZBIdGTeR6jS75CAYwZA1sbZBZCtWOQCUcNYZA7meHHNMZAp4q6JaxkhwRRzFh6BofVA7ufDeJJitFnJkjxnhFT13ox3eHwmlGY70hueKAukGcrknlrhmx1KLMPwPtyc'        # not an actual access token
 params['client_id'] = '482557670549890'                  
 params['client_secret'] = 'd62937e7f31973871d86b8242430b73e'     
 params['graph_domain'] = 'https://graph.facebook.com'
@@ -37,7 +38,8 @@ def get_data(url, endpointParams):
     return access_token_data
 
 #call method to retrieve data from API
-#df = get_data(url, endpointParams)
+df = get_data(url, endpointParams)
+print(df)
 
 
 #transform audience_insight into dataframe
@@ -55,9 +57,8 @@ def transform_data_country(audience_insight):
                     country_short.append(z)
                     country_number.append(x['value'][z])
     audience_country = pd.DataFrame(list(zip(country_short, country_number)), columns =['Country_ID', 'Count'])
-    #audience_country
     audience_country = audience_country.sort_values(by = ['Count'],ascending=False)
-    audience_country.to_csv('country_data.csv', index=False)
+    export_csv_to_folder(audience_country, 'country_data.csv')
     print(audience_country)
 
 def transform_data_city(audience_insight):
@@ -78,7 +79,7 @@ def transform_data_city(audience_insight):
     audience_city = pd.DataFrame(list(zip(city_name, region_name, city_number)), columns =['City', 'Region', 'Count'])
     #audience_city
     audience_city = audience_city.sort_values(by = ['Count'],ascending=False)
-    audience_city.to_csv('city_data.csv', index=False)
+    export_csv_to_folder(audience_city, 'city_data.csv')
     print(audience_city)
 
 def transform_data_gender(audience_insight):
@@ -97,7 +98,7 @@ def transform_data_gender(audience_insight):
                     age_bracket.append(gender_age_split[1])
                     age_number.append(x['value'][z])
     audience_genderage = pd.DataFrame(list(zip(gender, age_bracket, age_number)), columns =['Gender', 'Age Bracket', 'Count'])
-    audience_genderage.to_csv('gender_data.csv', index=False)
+    export_csv_to_folder(audience_genderage, 'gender_data.csv')
     print(audience_genderage)
 
 target = ["country", "city", "gender"]
