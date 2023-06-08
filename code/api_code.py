@@ -79,7 +79,7 @@ def transform_data_city(audience_insight):
     audience_city = pd.DataFrame(list(zip(city_name, region_name, city_number)), columns =['City', 'Region', 'Count'])
     #audience_city
     audience_city = audience_city.sort_values(by = ['Count'],ascending=False)
-    export_csv_to_folder(audience_city, 'city15_data.csv')
+    export_csv_to_folder(audience_city, 'cityminimal_data.csv')
     print(audience_city)
 
 def transform_data_gender(audience_insight):
@@ -98,7 +98,7 @@ def transform_data_gender(audience_insight):
                     age_bracket.append(gender_age_split[1])
                     age_number.append(x['value'][z])
     audience_genderage = pd.DataFrame(list(zip(gender, age_bracket, age_number)), columns =['Gender', 'Age Bracket', 'Count'])
-    export_csv_to_folder(audience_genderage, 'gender_data.csv')
+    export_csv_to_folder(audience_genderage, 'genderminimal_data.csv')
     print(audience_genderage)
 
 target = ["country", "city", "gender"]
