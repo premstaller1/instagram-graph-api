@@ -46,3 +46,5 @@ def upload_value_to_bigquery(value, table_id, date):
         print(f"Value {value} inserted into BigQuery table {table_id}.")
     else:
         print(f"Errors occurred while inserting the value into BigQuery table: {errors}")
+
+    
